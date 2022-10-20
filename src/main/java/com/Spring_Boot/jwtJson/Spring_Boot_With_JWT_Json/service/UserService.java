@@ -15,11 +15,19 @@ import java.util.Optional;
 public class UserService
 {
     private UserRepository userRepository;
+    private TokenService tokenService;
+
+    //    public UserService(UserRepository userRepository, TokenService tokenService) {
+    //        this.userRepository = userRepository;
+    //        this.tokenService = tokenService;
+    //    }
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, TokenService tokenService) {
         this.userRepository = userRepository;
+        this.tokenService = tokenService;
     }
+
 
     public User getUser(ObjectId userId)
     {
@@ -29,8 +37,11 @@ public class UserService
 
     public String saveUser(User user)
     {
-        userRepository.save(user);
-        return "Successfully Created User";
+        User savedUser = userRepository.save(user);
+        return "{" +
+                "\"message\":"+"\"Successfully Created User\",\n"+
+                "\"data\":"+savedUser+",\n"+
+                "\"token\":\""+tokenService.createToken(savedUser.getId())+"\"}";
     }
 
 }

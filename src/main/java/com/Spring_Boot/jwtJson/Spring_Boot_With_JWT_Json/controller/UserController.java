@@ -29,10 +29,10 @@ public class UserController
         return userService.saveUser(user);
     }
 
-    @GetMapping("/getUserDetails/{userid}")
-    public User getUserDetails(@PathVariable ObjectId userid)
+    @GetMapping("/getUserDetails")
+    public User getUserDetails(HttpServletRequest httpServletRequest)
     {
-        //ObjectId userid = (ObjectId) httpServletRequest.getAttribute("userId");
+        ObjectId userid = (ObjectId) httpServletRequest.getAttribute("userId");
         return userService.getUser(userid);
     }
 
