@@ -1,3 +1,6 @@
+
+########################################################################################################################
+
 User Service
 
 @Autowired userRespository, tokenService
@@ -27,3 +30,49 @@ createToken(ObjectId userId){
 
 
 }
+
+########################################################################################################################
+
+VERIFYING TOKEN
+
+
+getUserIDByToken(String token){
+
+	algorithm.HMAC256(TOKEN_SECRET)
+	
+	// Verifying the the algorithm with jwtverifier
+	JWTVerifier  verifier = JWT.require(algorithm).build()
+
+	// Token decoding using the verifier build on the HMAC256 algorithm
+	// DecodedJWT jwt = verifier.verify(token)
+
+	return jwt.getClaim(“userId”).asString()
+}
+
+########################################################################################################################
+
+
+@Configuration // Bean  extends GenericFilterBean
+Filter => JWTFilter =>
+@Autowiring => tokenService
+1. Spring Application on what routes the it has to be applied the authorization[token]
+2. and also excluding some routes Which doesn’t need your token requirement
+3. doFilter(ServletReq req, Servlet res, FilterChain filterChain)
+   => HttpServletrequest request = (HttpServletRequest) req
+   => HttpServletresponse response = (HttpServletResponse) res
+   Configuring to Http Protocol
+
+If authorization token exists assigning it to the String of token
+=> String token = request.getHeader(“Authorization”)
+
+if(allowRequestWithoutToken(request)){
+response.setStatus(HttpServletResponse.SC_OK)=> 200
+}
+else{
+Object userId = new ObjectId(tokenService.getUserIdFromToken(token))
+request.setAttirbute(“userId”, userId);
+filterChain.doFilter(req, res)
+}
+
+########################################################################################################################
+
