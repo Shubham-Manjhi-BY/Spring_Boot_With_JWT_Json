@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
-import java.util.Objects;
 
 
 
@@ -19,20 +18,19 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class User {
+public class Movie {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
     private String name;
-    private String email;
-    private String password;
+    private String releaseDate;
+
 
     @Override
     public String toString() {
         return "{" +
                 "\"id\":\"" + id +"\""+
                 ", \"name\":'" + name + '\'' +
-                ", \"email\":'" + email + '\'' +
-                ", \"password\":'" + password + '\'' +
+                ", \"releaseDate\":'" + releaseDate + '\''+
                 '}';
     }
 }

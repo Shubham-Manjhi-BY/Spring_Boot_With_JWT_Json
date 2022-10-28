@@ -13,49 +13,50 @@ import java.io.IOException;
 
 
 @Configuration
-public class JwtFilter extends GenericFilterBean
-{
+public class JWTFilter extends GenericFilterBean {
+
 
     private TokenService tokenService;
 
-
-    public JwtFilter(TokenService tokenService) {
+    public JWTFilter(TokenService tokenService) {
         this.tokenService = tokenService;
+
     }
 
-
-
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
-            throws IOException, ServletException
-    {
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) req;
         HttpServletResponse httpServletResponse = (HttpServletResponse) res;
 
         String token = httpServletRequest.getHeader("Authorization");
-        if("OPTIONS".equalsIgnoreCase(httpServletRequest.getMethod()))
-        {
-            httpServletResponse.sendError(HttpServletResponse.SC_OK,"success");
+
+        if("OPTIONS".equalsIgnoreCase(httpServletRequest.getMethod())){
+            httpServletResponse.sendError(HttpServletResponse.SC_OK,"Success");
             return;
         }
-        if(allowRequestWithoutToken(httpServletRequest))
-        {
+        if(allowRequestWithoutToken(httpServletRequest)){
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             filterChain.doFilter(req,res);
         }
-        else
-        {
-            ObjectId userId = new ObjectId(tokenService.getUserIdFromToken(token));
-            httpServletRequest.setAttribute("userId",userId);
+        else{
+            try{
+                ObjectId userId = new ObjectId(tokenService.getUserIdFromToken(token));
+                httpServletRequest.setAttribute("userId",userId);
+            }
+            catch (IllegalArgumentException exception){
+                //System.out.println(exception);
+            }
             filterChain.doFilter(req,res);
         }
+
+
+
     }
 
-    public boolean allowRequestWithoutToken(HttpServletRequest httpServletRequest)
-    {
-        System.out.println(httpServletRequest.getRequestURI());
-        if(httpServletRequest.getRequestURI().contains("/saveUser")) return true;
+
+    public  boolean allowRequestWithoutToken(HttpServletRequest request){
+        System.out.println(request.getRequestURI());
+        if(request.getRequestURI().contains("/user"))   return true;
         return false;
     }
-
 }
